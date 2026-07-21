@@ -21,5 +21,8 @@ public class App
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Hangman hangman = new Hangman();
+        hangman.run();
+
     }
 }

@@ -1,9 +1,14 @@
 package ph.edu.dlsu.lbycpob.game;
 
+import java.util.Scanner;
+
 public class Hangman {
+
+    private static final int INITIAL_GUESSES = 8;
+    private final Scanner scanner = new Scanner(System.in);
+
     public void intro() {
         int totalWidth = 65;
-
         String[] lines = {
                 "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
                 "Welcome to Hangman!",
@@ -23,5 +28,66 @@ public class Hangman {
             System.out.println(spaces.toString() + line);
         }
         System.out.println();
+    }
+    public void run() {
+        intro();
+        playOneGame("PROGRAMMER");
+    }
+    public int playOneGame(String secretWord) {
+        int guessesLeft = INITIAL_GUESSES;
+        StringBuilder guessedLetters = new StringBuilder();
+        while (guessesLeft > 0) {
+            String currentHint = createHint(secretWord, guessedLetters.toString());
+            if (!currentHint.contains("-")) {
+                System.out.println("You guessed the word: " + secretWord);
+                System.out.println("You win!");
+                return guessesLeft;
+            }
+            System.out.println("Secret word: " + currentHint);
+            System.out.println("Your guesses: " + guessedLetters);
+            System.out.println("Guesses left: " + guessesLeft);
+            // Delegate input reading and validation to readGuess
+            char guess = readGuess(guessedLetters.toString());
+            guessedLetters.append(guess);
+            if (secretWord.indexOf(guess) != -1) {
+                System.out.println("Correct!");
+            } else {
+                System.out.println("Incorrect.");
+                guessesLeft--;
+            }
+        }
+        System.out.println("You lost! The secret word was: " + secretWord);
+        return 0;
+    }
+    public char readGuess(String guessedLetters) {
+        while (true) {
+            System.out.print("Your guess? ");
+            String input = scanner.nextLine().trim().toUpperCase();
+            // Check if it's a single letter from A-Z
+            if (input.length() != 1 || !Character.isLetter(input.charAt(0))) {
+                System.out.println("Type a single letter from A-Z.");
+                continue;
+            }
+            char guess = input.charAt(0);
+
+            // Check if already guessed
+            if (guessedLetters.indexOf(guess) != -1) {
+                System.out.println("You already guessed that letter.");
+                continue;
+            }
+            return guess;
+        }
+    }
+    public String createHint(String secretWord, String guessedLetters) {
+        StringBuilder hint = new StringBuilder();
+        for (int i = 0; i < secretWord.length(); i++) {
+            char ch = secretWord.charAt(i);
+            if (guessedLetters.indexOf(String.valueOf(ch)) != -1) {
+                hint.append(ch);
+            } else {
+                hint.append("-");
+            }
+        }
+        return hint.toString();
     }
 }
