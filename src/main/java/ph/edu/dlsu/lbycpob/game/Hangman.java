@@ -42,7 +42,13 @@ public class Hangman {
     }
     public void run() {
         intro();
-        String secretWord = getRandomWord("words.txt");
+        System.out.print("Dictionary filename? ");
+        String filename = scanner.nextLine().trim();
+
+        if (filename.isEmpty()) {
+            filename = "words.txt";
+        }
+        String secretWord = getRandomWord(filename);
         playOneGame(secretWord);
     }
     public int playOneGame(String secretWord) {
