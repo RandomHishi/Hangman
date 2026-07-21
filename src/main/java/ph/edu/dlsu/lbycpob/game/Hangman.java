@@ -105,10 +105,14 @@ public class Hangman {
         return hint.toString();
     }
     public Hangman() {
-        this("/game-assets/hangman-art");
+        this("/game-assets/hangman-art", new ClasspathWordRepository());
     }
     public Hangman(String resourceBasePath) {
+        this(resourceBasePath, new ClasspathWordRepository());
+    }
+    public Hangman(String resourceBasePath, WordRepository wordRepository) {
         this.renderer = new AsciiArtRenderer(resourceBasePath);
+        this.wordRepository = wordRepository;
     }
     public void displayHangman(int guessCount) {
         if (guessCount < 0 || guessCount > MAX_GUESSES) {
@@ -117,7 +121,6 @@ public class Hangman {
             );
         }
         assert guessCount >= 0 && guessCount <= MAX_GUESSES : "guessCount out of range after validation - this is a bug";
-
         try {
             renderer.render(guessCount);
         } catch (IOException e) {
