@@ -3,6 +3,7 @@ import ph.edu.dlsu.lbycpob.render.AsciiArtRenderer;
 import ph.edu.dlsu.lbycpob.render.HangmanRenderer;
 import ph.edu.dlsu.lbycpob.repository.ClasspathWordRepository;
 import ph.edu.dlsu.lbycpob.repository.WordRepository;
+import ph.edu.dlsu.lbycpob.statistics.GameStatistics;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -48,8 +49,21 @@ public class Hangman {
         if (filename.isEmpty()) {
             filename = "words.txt";
         }
-        String secretWord = getRandomWord(filename);
-        playOneGame(secretWord);
+        GameStatistics statsTracker = GameStatistics.empty();
+        boolean playAgain = true;
+
+        while (playAgain) {
+            String secretWord = getRandomWord(filename);
+            int guessesRemaining = playOneGame(secretWord);
+
+            boolean won = guessesRemaining > 0;
+            statsTracker = statsTracker.withGame(won, guessesRemaining);
+
+            System.out.println();
+            playAgain = readBoolean("Do you want to play again? ", "Y", "N");
+            System.out.println();
+        }
+        stats(statsTracker.gamesPlayed(), statsTracker.gamesWon(), statsTracker.bestGuessesRemaining());
     }
     public int playOneGame(String secretWord) {
         int guessesLeft = INITIAL_GUESSES;
@@ -148,6 +162,39 @@ public class Hangman {
             System.out.println("Could not load words from \"" + filename + "\": " + e.getMessage());
             System.out.println("Using a built-in default word instead.");
             return DEFAULT_WORDS[random.nextInt(DEFAULT_WORDS.length)];
+        }
+    }
+    public boolean readBoolean(String prompt, String yes, String no) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase(yes)) {
+                return true;
+            }
+            if (input.equalsIgnoreCase(no)) {
+                return false;
+            }
+            System.out.println("Please type '" + yes + "' or '" + no + "'.");
+        }
+    }
+    public void stats(int gamesCount, int gamesWon, int best) {
+        double winPercent = (gamesCount == 0) ? 0.0 : (gamesWon * 100.0) / gamesCount;
+        String statsOutput = String.format(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
+                        "Overall statistics:\n" +
+                        "Games played: %d\n" +
+                        "Games won: %d\n" +
+                        "Win percent: %.1f%%\n" +
+                        "Best game: %d guess(es) remaining\n" +
+                        "Thanks for playing!!!\n" +
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
+                gamesCount, gamesWon, winPercent, best
+        );
+        System.out.println(statsOutput);
+        try (java.io.PrintWriter writer = new java.io.PrintWriter("statistics.txt")) {
+            writer.print(statsOutput);
+        } catch (IOException e) {
+            System.out.println("Could not save statistics to file: " + e.getMessage());
         }
     }
 }
