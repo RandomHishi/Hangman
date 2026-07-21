@@ -1,5 +1,4 @@
 package ph.edu.dlsu.lbycpob.utils;
-
 import ph.edu.dlsu.lbycpob.render.AsciiArtRenderer;
 import ph.edu.dlsu.lbycpob.repository.ClasspathWordRepository;
 import java.io.BufferedReader;
@@ -38,7 +37,7 @@ public final class ClasspathResources {
 public static List<String> readLines(String resourcePath) throws IOException {
     Objects.requireNonNull(resourcePath, "resourcePath must not be null");
 // try-with-resources: both streams are closed automatically, even
-// if readLine() throws partway through.
+// if readLine() throws.
     try (InputStream input =
                  ClasspathResources.class.getResourceAsStream(resourcePath)) {
         if (input == null) {
