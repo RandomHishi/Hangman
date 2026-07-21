@@ -179,17 +179,28 @@ public class Hangman {
     }
     public void stats(int gamesCount, int gamesWon, int best) {
         double winPercent = (gamesCount == 0) ? 0.0 : (gamesWon * 100.0) / gamesCount;
-        String statsOutput = String.format(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
-                        "Overall statistics:\n" +
-                        "Games played: %d\n" +
-                        "Games won: %d\n" +
-                        "Win percent: %.1f%%\n" +
-                        "Best game: %d guess(es) remaining\n" +
-                        "Thanks for playing!!!\n" +
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
-                gamesCount, gamesWon, winPercent, best
-        );
+        int totalWidth = 65;
+        String[] lines = {
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
+                "Overall statistics:",
+                "Games played: " + gamesCount,
+                "Games won: " + gamesWon,
+                String.format(java.util.Locale.ROOT, "Win percent: %.1f%%", winPercent),
+                "Best game: " + best + " guess(es) remaining",
+                "Thanks for playing!!!",
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        };
+
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) {
+            int padding = (totalWidth - line.length()) / 2;
+            StringBuilder spaces = new StringBuilder();
+            for (int i = 0; i < padding; i++) {
+                spaces.append(" ");
+            }
+            sb.append(spaces).append(line).append("\n");
+        }
+        String statsOutput = sb.toString();
         System.out.println(statsOutput);
         try (java.io.PrintWriter writer = new java.io.PrintWriter("statistics.txt")) {
             writer.print(statsOutput);
