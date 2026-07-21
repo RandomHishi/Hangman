@@ -1,15 +1,23 @@
 package ph.edu.dlsu.lbycpob.game;
 import ph.edu.dlsu.lbycpob.render.AsciiArtRenderer;
 import ph.edu.dlsu.lbycpob.render.HangmanRenderer;
+import ph.edu.dlsu.lbycpob.repository.ClasspathWordRepository;
+import ph.edu.dlsu.lbycpob.repository.WordRepository;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.Random;
 
 public class Hangman {
     private static final int MAX_GUESSES = 8;
     private static final int INITIAL_GUESSES = 8;
     private final Scanner scanner = new Scanner(System.in);
     private final HangmanRenderer renderer;
-
+    private static final String[] DEFAULT_WORDS = {
+            "JAVA", "HANGMAN", "COMPUTER", "KEYBOARD", "PROGRAM", "ALGORITHM"
+    };
+    private final Random random = new Random();
+    private final WordRepository wordRepository;
     public void intro() {
         int totalWidth = 65;
         String[] lines = {
@@ -34,12 +42,14 @@ public class Hangman {
     }
     public void run() {
         intro();
-        playOneGame("PROGRAMMER");
+        String secretWord = getRandomWord("words.txt");
+        playOneGame(secretWord);
     }
     public int playOneGame(String secretWord) {
         int guessesLeft = INITIAL_GUESSES;
         StringBuilder guessedLetters = new StringBuilder();
         while (guessesLeft > 0) {
+            displayHangman(guessesLeft);
             String currentHint = createHint(secretWord, guessedLetters.toString());
             if (!currentHint.contains("-")) {
                 System.out.println("You guessed the word: " + secretWord);
@@ -59,6 +69,7 @@ public class Hangman {
                 guessesLeft--;
             }
         }
+        displayHangman(0);
         System.out.println("You lost! The secret word was: " + secretWord);
         return 0;
     }
@@ -111,6 +122,23 @@ public class Hangman {
             renderer.render(guessCount);
         } catch (IOException e) {
             throw new RuntimeException("Could not display the hangman picture.", e);
+        }
+    }
+    public String getRandomWord(String filename) {
+        Objects.requireNonNull(filename, "filename must not be null");
+        if (filename.isBlank()) {
+            throw new IllegalArgumentException("filename must not be blank");
+        }
+        try {
+            return wordRepository.getRandomWord(filename);
+        } catch (IOException e) {
+            // Recovery: a missing/empty/unreadable word file should not
+            // crash the whole program. Tell the player clearly (using the
+            // exception's own message - no custom exception type needed),
+            // then fall back to a small built-in word list.
+            System.out.println("Could not load words from \"" + filename + "\": " + e.getMessage());
+            System.out.println("Using a built-in default word instead.");
+            return DEFAULT_WORDS[random.nextInt(DEFAULT_WORDS.length)];
         }
     }
 }
