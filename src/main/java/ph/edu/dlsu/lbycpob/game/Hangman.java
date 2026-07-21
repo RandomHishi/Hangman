@@ -1,11 +1,13 @@
 package ph.edu.dlsu.lbycpob.game;
-
+import ph.edu.dlsu.lbycpob.render.AsciiArtRenderer;
+import ph.edu.dlsu.lbycpob.render.HangmanRenderer;
 import java.util.Scanner;
 
 public class Hangman {
-
+    private static final int MAX_GUESSES = 8;
     private static final int INITIAL_GUESSES = 8;
     private final Scanner scanner = new Scanner(System.in);
+    private final HangmanRenderer renderer;
 
     public void intro() {
         int totalWidth = 65;
@@ -89,5 +91,25 @@ public class Hangman {
             }
         }
         return hint.toString();
+    }
+    public Hangman() {
+        this("/game-assets/hangman-art");
+    }
+    public Hangman(String resourceBasePath) {
+        this.renderer = new AsciiArtRenderer(resourceBasePath);
+    }
+    public void displayHangman(int guessCount) {
+        if (guessCount < 0 || guessCount > MAX_GUESSES) {
+            throw new IllegalArgumentException(
+                    "guessCount must be between 0 and " + MAX_GUESSES + ", got " + guessCount
+            );
+        }
+        assert guessCount >= 0 && guessCount <= MAX_GUESSES : "guessCount out of range after validation - this is a bug";
+
+        try {
+            renderer.render(guessCount);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not display the hangman picture.", e);
+        }
     }
 }
