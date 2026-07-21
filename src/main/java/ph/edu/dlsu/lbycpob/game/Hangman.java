@@ -1,6 +1,7 @@
 package ph.edu.dlsu.lbycpob.game;
 import ph.edu.dlsu.lbycpob.render.AsciiArtRenderer;
 import ph.edu.dlsu.lbycpob.render.HangmanRenderer;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Hangman {
