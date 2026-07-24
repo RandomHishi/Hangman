@@ -11,18 +11,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        try (InputStream input = App.class.getResourceAsStream("/game-assets/hangman-art/display0.txt");
-             BufferedReader reader = new BufferedReader(new InputStreamReader(input)))
-        {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         Hangman hangman = new Hangman();
         hangman.run();
-
     }
 }
