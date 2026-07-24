@@ -60,7 +60,7 @@ public class Hangman {
             statsTracker = statsTracker.withGame(won, guessesRemaining);
 
             System.out.println();
-            playAgain = readBoolean("Do you want to play again? ", "Y", "N");
+            playAgain = readBoolean("Do you want to play again? (Y/N) ", "Y", "N");
             System.out.println();
         }
         stats(statsTracker.gamesPlayed(), statsTracker.gamesWon(), statsTracker.bestGuessesRemaining());
