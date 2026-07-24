@@ -43,7 +43,7 @@ public class Hangman {
     }
     public void run() {
         intro();
-        System.out.print("Dictionary filename? ");
+        System.out.print("Enter the dictionary filename (test.txt, words.txt, large.txt):   ");
         String filename = scanner.nextLine().trim();
 
         if (filename.isEmpty()) {
